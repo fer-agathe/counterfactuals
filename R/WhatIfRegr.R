@@ -51,7 +51,8 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
     #'  if set to 'gower_c', a C-based more efficient version of Gower's distance is used.
     #'  A function must have three arguments  `x`, `y`, and `data` and should
     #'  return a `double` matrix with `nrow(x)` rows and maximum `nrow(y)` columns.
-    initialize = function(predictor, n_counterfactuals = 1L, lower = NULL, upper = NULL, distance_function = "gower") {
+    initialize = function(predictor, n_counterfactuals = 1L, lower = NULL, upper = NULL, distance_function = "gower",
+                          fixed_features = NULL, epsilon = NULL) {
       
       if (is.character(distance_function)) {
         if (distance_function == "gower") {
@@ -71,6 +72,10 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
 
       assert_integerish(n_counterfactuals, lower = 1L, any.missing = FALSE, len = 1L)
       private$n_counterfactuals = n_counterfactuals
+      assert_character(fixed_features, null.ok = TRUE)
+      private$fixed_features = fixed_features
+      assert_numeric(epsilon, lower = 0, null.ok = TRUE)
+      private$epsilon = epsilon
       X_search = private$predictor$data$X
       if (!is.null(lower)) {
         X_search = X_search[Reduce(`&`, Map(`>=`, X_search[, names(lower), with = FALSE], lower))]
@@ -88,6 +93,8 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
   private = list(
     n_counterfactuals = NULL,
     X_search = NULL,
+    fixed_features = NULL,
+    epsilon = NULL,
     
     run = function() {
       pred_column = private$get_pred_column()
@@ -98,12 +105,16 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
         pred_column = pred_column, 
         desired_y_hat_range = private$desired_outcome,
         X_search = private$X_search,
-        distance_function = private$distance_function
+        distance_function = private$distance_function,
+        fixed_features = private$fixed_features,
+        epsilon = private$epsilon
       )
     },
     
     print_parameters = function() {
-      cat(" - n_counterfactuals: ", private$n_counterfactuals %??% "NULL")
+      cat(" - n_counterfactuals: ", private$n_counterfactuals %??% "NULL", "\n")
+      cat(" - fixed_features: ", paste(private$fixed_features, collapse = ", ") %??% "NULL", "\n")
+      cat(" - epsilon: ", private$epsilon %??% "NULL", "\n")
     }
   )
 )
