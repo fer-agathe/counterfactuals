@@ -2,6 +2,7 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
                        fixed_features = NULL, epsilon = 0.25) {
   y_hat = setDT(predictor$predict(X_search))[[pred_column]]
   if (!is.null(fixed_features)) {
+    return("end")
     warning("Immutable features are considered")
     X_fixed <- X_search |> select(fixed_features)
     num_features <- names(X_fixed)[sapply(X_fixed, is.numeric)]
