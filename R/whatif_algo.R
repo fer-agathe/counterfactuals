@@ -11,10 +11,15 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
         (y_hat %between% desired_y_hat_range)
       X_search = X_search[filter_idx,]
       y_hat = y_hat[filter_idx]
+      
+      if (nrow(X_search) == 0L) {
+        warning("Impossible to find training instances for categ. variable(s).")
+      }
+      
     }
     if (length(num_features) != 0L) {
       if (is.null(epsilon)) {
-        epsilon <- 0.1 # accepted error initially for numerical features
+        epsilon <- 0.25 # accepted error initially for numerical features
       }
       val_features <- x_interest[, ..num_features]
       lower_bounds <- val_features - epsilon*abs(val_features)
@@ -28,12 +33,18 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
       y_hat = y_hat[filter_idx]
       
       if (nrow(X_search) == 0L) {
-        return(X_search)
+        warning("Impossible to find training instances for num. variable(s) under epsilon neighborhood.")
       }
+      
       # We assign to X_search the numerical feature values of x_interest
       X_search[, (num_features) := val_features]
       y_hat <- setDT(predictor$predict(X_search))[[pred_column]]
       X_search = X_search |> filter(y_hat %between% desired_y_hat_range)
+      
+      if (nrow(X_search) == 0L) {
+        warning("Impossible to find training instances for num. variable(s) after setting epsilon to 0.")
+      }
+      
     }
   } else {
     X_search = X_search[y_hat %between% desired_y_hat_range]
@@ -42,6 +53,7 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
   if (nrow(X_search) < n_cfactuals) {
     warning(sprintf("Could only find %s counterfactual(s)", nrow(X_search)))
   }
+  
   if (nrow(X_search) == 0L) {
     return(X_search)
   }
