@@ -52,7 +52,7 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
     #'  A function must have three arguments  `x`, `y`, and `data` and should
     #'  return a `double` matrix with `nrow(x)` rows and maximum `nrow(y)` columns.
     initialize = function(predictor, n_counterfactuals = 1L, lower = NULL, upper = NULL, distance_function = "gower",
-                          fixed_features = NULL, epsilon = NULL) {
+                          fixed_features = NULL, epsilon = 0.25) {
       
       if (is.character(distance_function)) {
         if (distance_function == "gower") {

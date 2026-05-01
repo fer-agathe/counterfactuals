@@ -1,5 +1,5 @@
 whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_y_hat_range, X_search, distance_function,
-                       fixed_features = NULL, epsilon = NULL) {
+                       fixed_features = NULL, epsilon = 0.25) {
   y_hat = setDT(predictor$predict(X_search))[[pred_column]]
   if (!is.null(fixed_features)) {
     X_fixed <- X_search |> select(fixed_features)
@@ -18,9 +18,6 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
       
     }
     if (length(num_features) != 0L) {
-      if (is.null(epsilon)) {
-        epsilon <- 0.25 # accepted error initially for numerical features
-      }
       val_features <- x_interest[, ..num_features]
       lower_bounds <- val_features - epsilon*abs(val_features)
       upper_bounds <- val_features + epsilon*abs(val_features)
