@@ -94,7 +94,7 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
     n_counterfactuals = NULL,
     X_search = NULL,
     fixed_features = NULL,
-    epsilon = NULL,
+    epsilon = 0.25,
     
     run = function() {
       pred_column = private$get_pred_column()
