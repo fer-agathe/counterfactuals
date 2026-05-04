@@ -2,7 +2,7 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
                        fixed_features = NULL, epsilon = 0.25) {
   y_hat = setDT(predictor$predict(X_search))[[pred_column]]
   if (!is.null(fixed_features)) {
-    cat("Immutable features are considered")
+    cat("Immutable features are considered:", paste(fixed_features, collapse = ", "), ".\n")
     X_fixed <- X_search |> select(fixed_features)
     num_features <- names(X_fixed)[sapply(X_fixed, is.numeric)]
     cat_features <- setdiff(names(X_fixed), num_features)
@@ -14,7 +14,7 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
       y_hat = y_hat[filter_idx]
       
       if (nrow(X_search) == 0L) {
-        warning("Impossible to find training instances for categ. variable(s).")
+        warning("Impossible to find training instances for categ. variable(s). \n")
       }
       
     }
@@ -31,7 +31,7 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
       y_hat = y_hat[filter_idx]
       
       if (nrow(X_search) == 0L) {
-        warning("Impossible to find training instances for num. variable(s) under epsilon neighborhood.")
+        warning("Impossible to find training instances for num. variable(s) under epsilon neighborhood. \n")
       }
       
       # We assign to X_search the numerical feature values of x_interest
@@ -40,7 +40,7 @@ whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_
       X_search = X_search |> filter(y_hat %between% desired_y_hat_range)
       
       if (nrow(X_search) == 0L) {
-        warning("Impossible to find training instances for num. variable(s) after setting epsilon to 0.")
+        warning("Impossible to find training instances for num. variable(s) after setting epsilon to 0. \n")
       }
       
     }
