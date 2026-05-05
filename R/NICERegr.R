@@ -90,7 +90,7 @@ NICERegr = R6::R6Class("NICERegr",
     #'  A function must have three arguments  `x`, `y`, and `data` and should
     #'  return a `double` matrix with `nrow(x)` rows and maximum `nrow(y)` columns.
     initialize = function(predictor, optimization = "sparsity", x_nn_correct = TRUE, margin_correct = NULL, 
-      return_multiple = FALSE, finish_early = TRUE, distance_function = "gower") {
+      return_multiple = FALSE, finish_early = TRUE, distance_function = "gower", fixed_features = NULL) {
       
       if (is.character(distance_function)) {
         if (distance_function == "gower") {
@@ -111,12 +111,14 @@ NICERegr = R6::R6Class("NICERegr",
       assert_flag(return_multiple)
       assert_flag(finish_early)
       assert_numeric(margin_correct, len = 1L, any.missing = FALSE, null.ok = TRUE)
+      assert_character(fixed_features, null.ok = TRUE)
       
       private$optimization = optimization
       private$x_nn_correct = x_nn_correct
       private$return_multiple = return_multiple
       private$finish_early = finish_early
       private$y_hat = private$predictor$predict(predictor$data$X)
+      private$fixed_features = fixed_features
       
       if (private$optimization == "plausibility") {
         if (!requireNamespace("keras", quietly = TRUE)) {
@@ -178,6 +180,7 @@ NICERegr = R6::R6Class("NICERegr",
     finish_early = NULL,
     is_correctly_classified = NULL,
     candidates_x_nn = NULL,
+    fixed_features = NULL,
     .x_nn = NULL,
     .archive = NULL,
     run = function() {
@@ -198,7 +201,8 @@ NICERegr = R6::R6Class("NICERegr",
         ae_model = private$ae_model,
         ae_preprocessor = private$ae_preprocessor,
         archive = private$.archive,
-        distance_function = private$distance_function
+        distance_function = private$distance_function,
+        fixed_features = private$fixed_features
       )
       
       private$.x_nn = res$x_nn
@@ -209,6 +213,7 @@ NICERegr = R6::R6Class("NICERegr",
       cat(" - finish_early: ", private$finish_early %??% "NULL", "\n")
       cat(" - optimization: ", private$optimization %??% "NULL", "\n")
       cat(" - return_multiple: ", private$return_multiple %??% "NULL", "\n")
+      cat(" - fixed_features: ", paste(private$fixed_features, collapse = ", ") %??% "NULL", "\n")
       cat(" - x_nn_correct: ", private$x_nn_correct %??% "NULL", "\n")
     }
   )
