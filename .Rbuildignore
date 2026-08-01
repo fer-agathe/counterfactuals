@@ -24,3 +24,5 @@
 ^vignettes/how-to-add-new-cf-methods\.Rmd$
 ^vignettes/introduction\.Rmd$
 ^vignettes/other_models\.Rmd$
+^\.positai$
+^\.claude$
