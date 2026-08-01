@@ -51,7 +51,10 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
     #'  if set to 'gower_c', a C-based more efficient version of Gower's distance is used.
     #'  A function must have three arguments  `x`, `y`, and `data` and should
     #'  return a `double` matrix with `nrow(x)` rows and maximum `nrow(y)` columns.
-    initialize = function(predictor, n_counterfactuals = 1L, lower = NULL, upper = NULL, distance_function = "gower",
+    initialize = function(predictor,
+                          n_counterfactuals = 1L, 
+                          lower = NULL, upper = NULL, forbidden = NULL,
+                          distance_function = "gower",
                           fixed_features = NULL, epsilon = 0.25) {
       
       if (is.character(distance_function)) {
@@ -85,6 +88,9 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
       }
       if (nrow(X_search) < n_counterfactuals) {
         warning(sprintf("Could only find %s candidate(s) with feature values between `lower` and `upper`.", nrow(X_search)))
+      }
+      if (!is.null(forbidden)) {
+        X_search = X_search[ Reduce(`&`, Map(`!=`, X_search[, names(forbidden), with = FALSE], forbidden))]
       }
       private$X_search = X_search
     }
