@@ -53,9 +53,12 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
     #'  return a `double` matrix with `nrow(x)` rows and maximum `nrow(y)` columns.
     initialize = function(predictor,
                           n_counterfactuals = 1L, 
-                          lower = NULL, upper = NULL, forbidden = NULL,
+                          lower = NULL, upper = NULL, 
+                          forbidden = NULL,
                           distance_function = "gower",
-                          fixed_features = NULL, epsilon = 0.25) {
+                          fixed_features = NULL, 
+                          epsilon = 0.3,
+                          exposure = NULL) {
       
       if (is.character(distance_function)) {
         if (distance_function == "gower") {
@@ -79,6 +82,8 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
       private$fixed_features = fixed_features
       assert_numeric(epsilon, lower = 0, null.ok = TRUE)
       private$epsilon = epsilon
+      assert_character(exposure, null.ok = TRUE)
+      private$exposure = exposure
       X_search = private$predictor$data$X
       if (!is.null(lower)) {
         X_search = X_search[Reduce(`&`, Map(`>=`, X_search[, names(lower), with = FALSE], lower))]
@@ -100,7 +105,8 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
     n_counterfactuals = NULL,
     X_search = NULL,
     fixed_features = NULL,
-    epsilon = 0.25,
+    epsilon = 0.3,
+    exposure = NULL,
     
     run = function() {
       pred_column = private$get_pred_column()
@@ -113,7 +119,8 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
         X_search = private$X_search,
         distance_function = private$distance_function,
         fixed_features = private$fixed_features,
-        epsilon = private$epsilon
+        epsilon = private$epsilon,
+        exposure = private$exposure
       )
     },
     
@@ -121,6 +128,7 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
       cat(" - n_counterfactuals: ", private$n_counterfactuals %??% "NULL", "\n")
       cat(" - fixed_features: ", paste(private$fixed_features, collapse = ", ") %??% "NULL", "\n")
       cat(" - epsilon: ", private$epsilon %??% "NULL", "\n")
+      cat(" - exposure: ", private$exposure %??% "NULL", "\n")
     }
   )
 )
