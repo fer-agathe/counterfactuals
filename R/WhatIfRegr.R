@@ -97,6 +97,10 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
       if (!is.null(forbidden)) {
         X_search = X_search[ Reduce(`&`, Map(`!=`, X_search[, names(forbidden), with = FALSE], forbidden))]
       }
+      if (!is.null(exposure)) {
+        X_search[, (exposure) := 1]
+        X_search = unique(X_search)
+      }
       private$X_search = X_search
     }
   ),

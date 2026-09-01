@@ -1,9 +1,6 @@
 whatif_algo = function(predictor, n_cfactuals, x_interest, pred_column, desired_y_hat_range, X_search, distance_function,
-                       fixed_features, epsilon, exposure) {
+                       fixed_features, epsilon) {
   y_hat = setDT(predictor$predict(X_search))[[pred_column]]
-  if (!is.null(exposure)) {
-    X_search[, (exposure) := x_interest[[exposure]]]
-  }
   if (!is.null(fixed_features)) {
     cat("Immutable features are considered:", paste(fixed_features, collapse = ", "), ".\n")
     X_fixed <- X_search |> select(fixed_features)
