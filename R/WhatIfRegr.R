@@ -123,8 +123,7 @@ WhatIfRegr = R6::R6Class("WhatIfRegr", inherit = CounterfactualMethodRegr,
         X_search = private$X_search,
         distance_function = private$distance_function,
         fixed_features = private$fixed_features,
-        epsilon = private$epsilon,
-        exposure = private$exposure
+        epsilon = private$epsilon
       )
     },
     
